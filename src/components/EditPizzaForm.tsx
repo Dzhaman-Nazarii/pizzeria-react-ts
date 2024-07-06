@@ -2,71 +2,59 @@ import { ChangeEvent, FC, FormEvent, useState } from "react";
 import "./styles.css";
 import { Pizza } from "../models/Pizza";
 
-interface IPizzaFormProps {
-	addPizza: (newPizza: Pizza) => void
+interface IEditPizzaFormProps {
+	data: Pizza,
+	updatePizza: (newPizza: Pizza) => void,
+	handleToggleEdit: () => void
 }
 
-const initialState = {
-	title: "",
-	price: "",
-	image: "",
-};
 
-const AddPizzaForm: FC<IPizzaFormProps> = ({addPizza}) => {
-	const [newPizza, setNewPizza] = useState<{
-		title: string;
-		price: string;
-		image: string;
-	}>(initialState);
+const EditPizzaForm: FC<IEditPizzaFormProps> = ({data, updatePizza, handleToggleEdit}) => {
+	const [editPizza, setEditPizza] = useState<Pizza>(data);
 
 	const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = evt.target;
-		setNewPizza({
-			...newPizza,
+		setEditPizza({
+			...editPizza,
 			[name]: value,
 		});
 	};
 
 	const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
 		evt.preventDefault();
-		const {title, price, image} = newPizza;
+		const {title, price, image} = editPizza;
 		if(title && price && image) {
-			addPizza({
-				id: Date.now(),
-				title,
-				price: Number(price),
-				image
-			})
-			setNewPizza(initialState);
-		}
+			updatePizza(editPizza);
+			handleToggleEdit();
+		};
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={handleSubmit} className="edit-form">
 			<input
 				type="text"
 				name="title"
 				placeholder="Write a pizza name"
-				value={newPizza.title}
+				value={editPizza.title}
 				onChange={handleChange}
 			/>
 			<input
 				type="text"
 				name="price"
 				placeholder="Pizza price"
-				value={newPizza.price}
+				value={editPizza.price}
 				onChange={handleChange}
 			/>
 			<input
 				type="text"
 				name="image"
 				placeholder="Pizza image"
-				value={newPizza.image}
+				value={editPizza.image}
 				onChange={handleChange}
 			/>
-			<button type="submit">Add to menu</button>
+			<button type="submit">Accept</button>
 		</form>
 	);
 };
 
-export default AddPizzaForm;
+export default EditPizzaForm;
